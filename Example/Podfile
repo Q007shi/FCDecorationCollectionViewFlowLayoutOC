@@ -1,13 +1,10 @@
 use_frameworks!
 
-platform :ios, '8.0'
+platform :ios, '9.0'
 
 target 'FCDecorationCollectionViewFlowLayoutOC_Example' do
   pod 'FCDecorationCollectionViewFlowLayoutOC', :path => '../'
 
-  target 'FCDecorationCollectionViewFlowLayoutOC_Tests' do
-    inherit! :search_paths
-
-    pod 'FBSnapshotTestCase'
-  end
+  pod 'Masonry'
+  
 end

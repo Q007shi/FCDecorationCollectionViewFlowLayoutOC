@@ -1,0 +1,23 @@
+PODS:
+  - FCDecorationCollectionViewFlowLayoutOC (0.0.1)
+  - Masonry (1.1.0)
+
+DEPENDENCIES:
+  - FCDecorationCollectionViewFlowLayoutOC (from `../`)
+  - Masonry
+
+SPEC REPOS:
+  trunk:
+    - Masonry
+
+EXTERNAL SOURCES:
+  FCDecorationCollectionViewFlowLayoutOC:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  FCDecorationCollectionViewFlowLayoutOC: 7f0b2b5be7d21da28f51279fb35a2031771a68f2
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+
+PODFILE CHECKSUM: 23fc17c32175d2f100ea0c8a7cbb96c7adca74a9
+
+COCOAPODS: 1.9.1

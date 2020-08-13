@@ -1,0 +1,6 @@
+framework module FCDecorationCollectionViewFlowLayoutOC {
+  umbrella header "FCDecorationCollectionViewFlowLayoutOC-umbrella.h"
+
+  export *
+  module * { export * }
+}
