@@ -23,6 +23,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    
     self.collectionView.dataSource = self;
     [self.collectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"aa"];
     
