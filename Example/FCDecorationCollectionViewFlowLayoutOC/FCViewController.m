@@ -24,7 +24,7 @@
 {
     [super viewDidLoad];
     
-    self.flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    self.flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
     self.collectionView.dataSource = self;
     [self.collectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"aa"];
@@ -44,7 +44,7 @@
     return 30;
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return 13;
+    return 50;
 }
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"aa" forIndexPath:indexPath];
@@ -58,7 +58,7 @@
         label.tag = 101;
         [cell.contentView addSubview:label];
         [label mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(UIEdgeInsetsMake(indexPath.row * 5, indexPath.row * 10, indexPath.row * 15, indexPath.row * 20));
+            make.edges.mas_equalTo(UIEdgeInsetsMake(arc4random_uniform(20), arc4random_uniform(20), arc4random_uniform(20), arc4random_uniform(20)));
         }];
     }
     label.text = [NSString stringWithFormat:@"%ld - %ld",indexPath.section,indexPath.row];
@@ -75,14 +75,14 @@
         backM.reuseIdentifier = NSStringFromClass(FCCollectionReusableView1.class);
         backM.decorationViewLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:NSStringFromClass(FCCollectionReusableView1.class) withIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
         backM.decorationViewLayoutAttributes.zIndex = -1;
-        backM.decorationViewEdgeInsets = [NSValue valueWithUIEdgeInsets:UIEdgeInsetsMake(-30, -10, 10, -10)];
+//        backM.decorationViewEdgeInsets = [NSValue valueWithUIEdgeInsets:UIEdgeInsetsMake(-30, -10, 10, -10)];
         
         
         FCDecorationViewMsgModel *backM2 = FCDecorationViewMsgModel.new;
         backM2.reuseIdentifier = NSStringFromClass(FCCollectionReusableView2.class);
         backM2.decorationViewLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:NSStringFromClass(FCCollectionReusableView2.class) withIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
         backM2.decorationViewLayoutAttributes.zIndex = 1;
-        backM2.decorationViewEdgeInsets = [NSValue valueWithUIEdgeInsets:UIEdgeInsetsMake(20, 20, 0, 0)];
+//        backM2.decorationViewEdgeInsets = [NSValue valueWithUIEdgeInsets:UIEdgeInsetsMake(20, 20, 0, 0)];
         backM2.decorationViewSize = [NSValue valueWithCGSize:CGSizeMake(40, 40)];
         
         

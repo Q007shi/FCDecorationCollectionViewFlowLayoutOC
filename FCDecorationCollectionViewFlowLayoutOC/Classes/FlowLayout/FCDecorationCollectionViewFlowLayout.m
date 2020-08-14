@@ -39,12 +39,11 @@
         }
         
         NSArray<FCDecorationViewMsgModel *> *decorationMsgs = [self.decorationViewDelegate collectionView:self.collectionView layout:self decorationViewMsgForSection:section];
-        if (decorationMsgs.count == 0) {
+        if (decorationMsgs == nil || ![decorationMsgs isKindOfClass:NSArray.class] || decorationMsgs.count == 0) {
             continue;
         }
         
         UICollectionViewLayoutAttributes *firstItemLayoutAttri = [self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
-        UICollectionViewLayoutAttributes *lastItemLayoutAttri = [self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForItem:itemNum - 1 inSection:section]];
         
         //获取当前 section 的边距
         UIEdgeInsets sectionInset = self.sectionInset;
@@ -53,7 +52,11 @@
         }
         
         //计算 DecorationView 的 frame
-        CGRect sectionFrame = CGRectUnion(firstItemLayoutAttri.frame, lastItemLayoutAttri.frame);
+        CGRect sectionFrame = firstItemLayoutAttri.frame;
+        for (NSInteger item = 0; item < itemNum; item++) {
+            UICollectionViewLayoutAttributes *layoutAttri = [self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForItem:item inSection:section]];
+            sectionFrame = CGRectUnion(sectionFrame, layoutAttri.frame);
+        }
         
         if (self.scrollDirection == UICollectionViewScrollDirectionHorizontal) {//水平
             CGFloat x = sectionFrame.origin.x - sectionInset.left;
