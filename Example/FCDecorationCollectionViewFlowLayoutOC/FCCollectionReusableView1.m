@@ -14,6 +14,9 @@
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         self.backgroundColor = [UIColor colorWithRed:arc4random_uniform(255)/255.0 green:arc4random_uniform(255)/255.0 blue:arc4random_uniform(255)/255.0 alpha:1];
+        
+        self.layer.cornerRadius = 50;
+        self.layer.masksToBounds = YES;
     }
     return self;
 }
