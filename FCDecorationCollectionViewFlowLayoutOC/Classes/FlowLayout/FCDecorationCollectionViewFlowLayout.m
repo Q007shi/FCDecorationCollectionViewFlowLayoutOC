@@ -114,7 +114,7 @@
     
     for (NSArray *decorationLayoutAttributes in decorationLayoutAttributeSet) {
         for (UICollectionViewLayoutAttributes *layoutAttributes in decorationLayoutAttributes) {
-            if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
+            if (CGRectIntersectsRect(rect, layoutAttributes.frame) && ![mArr containsObject:layoutAttributes]) {
                 [mArr addObject:layoutAttributes];
             }
         }
