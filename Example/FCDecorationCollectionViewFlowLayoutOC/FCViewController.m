@@ -12,7 +12,7 @@
 #import "FCCollectionReusableView2.h"
 #import <Masonry/Masonry.h>
 
-@interface FCViewController ()<UICollectionViewDataSource,FCDecorationCollectionViewFlowLayoutDelegate,UICollectionViewDelegateFlowLayout>
+@interface FCViewController ()<UICollectionViewDataSource,FCDecorationCollectionViewFlowLayoutDelegate,FCCollectionViewDelegateFlowLayout>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet FCDecorationCollectionViewFlowLayout *flowLayout;
 
@@ -23,7 +23,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    self.collectionView.delegate = self;
     self.flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
     self.collectionView.dataSource = self;
@@ -35,6 +35,7 @@
     self.flowLayout.decorationViewDelegate = self;
     self.flowLayout.minimumLineSpacing = 5;
     self.flowLayout.minimumInteritemSpacing = 0;
+    self.flowLayout.horizontalAlign = FCDecorationCollectionViewFlowLayoutHorizontalAlignLeft;
     
     [self.flowLayout registerClass:FCCollectionReusableView1.class forDecorationViewOfKind:NSStringFromClass(FCCollectionReusableView1.class)];
     [self.flowLayout registerClass:FCCollectionReusableView2.class forDecorationViewOfKind:NSStringFromClass(FCCollectionReusableView2.class)];
@@ -64,6 +65,13 @@
     label.text = [NSString stringWithFormat:@"%ld - %ld",indexPath.section,indexPath.row];
     
     return cell;
+}
+
+- (FCDecorationCollectionViewFlowLayoutHorizontalAlign)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout horizontalAlignInSection:(NSInteger)section{
+    if (section % 2 == 0) {
+        return FCDecorationCollectionViewFlowLayoutHorizontalAlignNormal;
+    }
+    return FCDecorationCollectionViewFlowLayoutHorizontalAlignLeft;
 }
 
 

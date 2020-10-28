@@ -7,9 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger,FCDecorationCollectionViewFlowLayoutHorizontalAlign){
+    FCDecorationCollectionViewFlowLayoutHorizontalAlignNormal,//系统默认
+    FCDecorationCollectionViewFlowLayoutHorizontalAlignLeft,//向左对齐
+    FCDecorationCollectionViewFlowLayoutHorizontalAlignRight,//向右对齐
+};
+
 @protocol FCDecorationCollectionViewFlowLayoutDelegate;
 @interface FCDecorationCollectionViewFlowLayout : UICollectionViewFlowLayout
 
+
+/** 水平对齐方式  */
+@property(nonatomic, assign)FCDecorationCollectionViewFlowLayoutHorizontalAlign horizontalAlign;
 /** <#aaa#>  */
 @property(nonatomic, weak)id<FCDecorationCollectionViewFlowLayoutDelegate> decorationViewDelegate;
 
@@ -35,5 +44,11 @@
 @property(nonatomic)NSValue *decorationViewEdgeInsets;
 /** CGSize  */
 @property(nonatomic)NSValue *decorationViewSize;
+
+@end
+
+@protocol FCCollectionViewDelegateFlowLayout <UICollectionViewDelegateFlowLayout>
+
+- (FCDecorationCollectionViewFlowLayoutHorizontalAlign)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout horizontalAlignInSection:(NSInteger)section;
 
 @end

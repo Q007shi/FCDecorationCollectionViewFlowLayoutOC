@@ -3,9 +3,54 @@
 //  FCDecorationCollectionViewFlowLayoutOC
 //
 //  Created by 石富才 on 2020/8/13.
+
+//https://stackoverflow.com/questions/13017257/how-do-you-determine-spacing-between-cells-in-uicollectionview-flowlayout
 //
 
 #import "FCDecorationCollectionViewFlowLayout.h"
+
+//================
+
+@interface UICollectionViewLayoutAttributes (LeftAlign)
+
+- (void)leftAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset;
+
+@end
+
+@implementation UICollectionViewLayoutAttributes (LeftAlign)
+
+- (void)leftAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset
+{
+    CGRect frame = self.frame;
+    frame.origin.x = sectionInset.left;
+    self.frame = frame;
+}
+
+@end
+
+//---------
+
+//================
+
+@interface UICollectionViewLayoutAttributes (RightAlign)
+
+- (void)rightAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset;
+
+@end
+
+@implementation UICollectionViewLayoutAttributes (RightAlign)
+
+- (void)rightAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset
+{
+    CGRect frame = self.frame;
+    frame.origin.x = sectionInset.left;
+    self.frame = frame;
+}
+
+@end
+
+//---------
+
 
 @interface FCDecorationCollectionViewFlowLayout ()
 
@@ -28,7 +73,7 @@
     [self.decorationMsgs removeAllObjects];
     
     //
-    id<UICollectionViewDelegateFlowLayout> delegateFlowLayout = (id<UICollectionViewDelegateFlowLayout>)self.collectionView.delegate;
+    id<FCCollectionViewDelegateFlowLayout> delegateFlowLayout = (id<FCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
     
     
     //获取每个 section 中 DecorationView 的 frame
@@ -108,10 +153,26 @@
     }
 }
 - (NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect{
+    //
     NSArray *arr = [super layoutAttributesForElementsInRect:rect];
     NSMutableArray *mArr = [NSMutableArray arrayWithArray:arr];
-    NSArray *decorationLayoutAttributeSet = self.decorationMsgs.allValues;
     
+    FCDecorationCollectionViewFlowLayoutHorizontalAlign horizontalAlign = self.horizontalAlign;
+    id<FCCollectionViewDelegateFlowLayout> delegate = (id<FCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
+    for (UICollectionViewLayoutAttributes *attributes in arr) {
+        if (!attributes.representedElementKind) {
+            if (delegate && [delegate respondsToSelector:@selector(collectionView:layout:horizontalAlignInSection:)]) {
+                horizontalAlign = [delegate collectionView:self.collectionView layout:self horizontalAlignInSection:attributes.indexPath.section];
+            }
+            if (horizontalAlign == FCDecorationCollectionViewFlowLayoutHorizontalAlignLeft) {
+                NSUInteger index = [mArr indexOfObject:attributes];
+                mArr[index] = [self layoutAttributesForItemAtIndexPath:attributes.indexPath];
+            }
+            
+        }
+    }
+    
+    NSArray *decorationLayoutAttributeSet = self.decorationMsgs.allValues;
     for (NSArray *decorationLayoutAttributes in decorationLayoutAttributeSet) {
         for (UICollectionViewLayoutAttributes *layoutAttributes in decorationLayoutAttributes) {
             if (CGRectIntersectsRect(rect, layoutAttributes.frame) && ![mArr containsObject:layoutAttributes]) {
@@ -119,6 +180,7 @@
             }
         }
     }
+    
     return mArr;
 }
 
@@ -138,7 +200,69 @@
         }
     }
     
+    FCDecorationCollectionViewFlowLayoutHorizontalAlign horizontalAlign = self.horizontalAlign;
+    id<FCCollectionViewDelegateFlowLayout> delegate = (id<FCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
+    if (delegate && [delegate respondsToSelector:@selector(collectionView:layout:horizontalAlignInSection:)]) {
+        horizontalAlign = [delegate collectionView:self.collectionView layout:self horizontalAlignInSection:indexPath.section];
+    }
+    if (horizontalAlign == FCDecorationCollectionViewFlowLayoutHorizontalAlignLeft) {
+        UICollectionViewLayoutAttributes* currentItemAttributes = [[super layoutAttributesForItemAtIndexPath:indexPath] copy];
+        UIEdgeInsets sectionInset = [self evaluatedSectionInsetForItemAtIndex:indexPath.section];
+        
+        BOOL isFirstItemInSection = indexPath.item == 0;
+        CGFloat layoutWidth = CGRectGetWidth(self.collectionView.frame) - sectionInset.left - sectionInset.right;
+        
+        if (isFirstItemInSection) {
+            [currentItemAttributes leftAlignFrameWithSectionInset:sectionInset];
+            return currentItemAttributes;
+        }
+        
+        NSIndexPath* previousIndexPath = [NSIndexPath indexPathForItem:indexPath.item-1 inSection:indexPath.section];
+        CGRect previousFrame = [self layoutAttributesForItemAtIndexPath:previousIndexPath].frame;
+        CGFloat previousFrameRightPoint = previousFrame.origin.x + previousFrame.size.width;
+        CGRect currentFrame = currentItemAttributes.frame;
+        CGRect strecthedCurrentFrame = CGRectMake(sectionInset.left,
+                                                  currentFrame.origin.y,
+                                                  layoutWidth,
+                                                  currentFrame.size.height);
+        // if the current frame, once left aligned to the left and stretched to the full collection view
+        // width intersects the previous frame then they are on the same line
+        BOOL isFirstItemInRow = !CGRectIntersectsRect(previousFrame, strecthedCurrentFrame);
+        
+        if (isFirstItemInRow) {
+            // make sure the first item on a line is left aligned
+            [currentItemAttributes leftAlignFrameWithSectionInset:sectionInset];
+            return currentItemAttributes;
+        }
+        
+        CGRect frame = currentItemAttributes.frame;
+        frame.origin.x = previousFrameRightPoint + [self evaluatedMinimumInteritemSpacingForSectionAtIndex:indexPath.section];
+        currentItemAttributes.frame = frame;
+        return currentItemAttributes;
+    }
+    
     return [super layoutAttributesForSupplementaryViewOfKind:elementKind atIndexPath:indexPath];
+}
+- (CGFloat)evaluatedMinimumInteritemSpacingForSectionAtIndex:(NSInteger)sectionIndex
+{
+    if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:layout:minimumInteritemSpacingForSectionAtIndex:)]) {
+        id<FCCollectionViewDelegateFlowLayout> delegate = (id<FCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
+        
+        return [delegate collectionView:self.collectionView layout:self minimumInteritemSpacingForSectionAtIndex:sectionIndex];
+    } else {
+        return self.minimumInteritemSpacing;
+    }
+}
+
+- (UIEdgeInsets)evaluatedSectionInsetForItemAtIndex:(NSInteger)index
+{
+    if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:layout:insetForSectionAtIndex:)]) {
+        id<FCCollectionViewDelegateFlowLayout> delegate = (id<FCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
+        
+        return [delegate collectionView:self.collectionView layout:self insetForSectionAtIndex:index];
+    } else {
+        return self.sectionInset;
+    }
 }
 
 
