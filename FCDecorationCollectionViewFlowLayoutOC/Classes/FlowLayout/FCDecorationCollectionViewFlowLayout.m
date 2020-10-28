@@ -199,6 +199,11 @@
             }
         }
     }
+    return [super layoutAttributesForSupplementaryViewOfKind:elementKind atIndexPath:indexPath];
+}
+
+- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewLayoutAttributes* currentItemAttributes = [[super layoutAttributesForItemAtIndexPath:indexPath] copy];
     
     FCDecorationCollectionViewFlowLayoutHorizontalAlign horizontalAlign = self.horizontalAlign;
     id<FCCollectionViewDelegateFlowLayout> delegate = (id<FCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
@@ -206,7 +211,6 @@
         horizontalAlign = [delegate collectionView:self.collectionView layout:self horizontalAlignInSection:indexPath.section];
     }
     if (horizontalAlign == FCDecorationCollectionViewFlowLayoutHorizontalAlignLeft) {
-        UICollectionViewLayoutAttributes* currentItemAttributes = [[super layoutAttributesForItemAtIndexPath:indexPath] copy];
         UIEdgeInsets sectionInset = [self evaluatedSectionInsetForItemAtIndex:indexPath.section];
         
         BOOL isFirstItemInSection = indexPath.item == 0;
@@ -238,11 +242,10 @@
         CGRect frame = currentItemAttributes.frame;
         frame.origin.x = previousFrameRightPoint + [self evaluatedMinimumInteritemSpacingForSectionAtIndex:indexPath.section];
         currentItemAttributes.frame = frame;
-        return currentItemAttributes;
     }
-    
-    return [super layoutAttributesForSupplementaryViewOfKind:elementKind atIndexPath:indexPath];
+    return currentItemAttributes;
 }
+
 - (CGFloat)evaluatedMinimumInteritemSpacingForSectionAtIndex:(NSInteger)sectionIndex
 {
     if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:layout:minimumInteritemSpacingForSectionAtIndex:)]) {
