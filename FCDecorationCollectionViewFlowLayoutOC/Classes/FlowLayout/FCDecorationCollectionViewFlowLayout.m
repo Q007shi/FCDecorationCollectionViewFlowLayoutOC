@@ -171,12 +171,12 @@
             
         }
     }
-    
-    NSArray *decorationLayoutAttributeSet = self.decorationMsgs.allValues;
-    for (NSArray *decorationLayoutAttributes in decorationLayoutAttributeSet) {
-        for (UICollectionViewLayoutAttributes *layoutAttributes in decorationLayoutAttributes) {
-            if (CGRectIntersectsRect(rect, layoutAttributes.frame) && ![mArr containsObject:layoutAttributes]) {
-                [mArr addObject:layoutAttributes];
+    for (UICollectionViewLayoutAttributes *layoutAttributes in arr) {
+        if ([self.decorationMsgs.allKeys containsObject:@(layoutAttributes.indexPath.section)]) {
+            for (UICollectionViewLayoutAttributes *desLayoutAttri in self.decorationMsgs[@(layoutAttributes.indexPath.section)]) {
+                if (CGRectIntersectsRect(rect, desLayoutAttri.frame)) {
+                    [mArr addObject:desLayoutAttri];
+                }
             }
         }
     }
@@ -189,11 +189,12 @@
 - (nullable UICollectionViewLayoutAttributes *)layoutAttributesForDecorationViewOfKind:(NSString*)elementKind atIndexPath:(NSIndexPath *)indexPath{
     
     if (self.decorationViewDelegate && [self.decorationViewDelegate respondsToSelector:@selector(collectionView:layout:decorationViewMsgForSection:)]) {
+        
         NSArray<FCDecorationViewMsgModel *> *decorationMsgs = [self.decorationViewDelegate collectionView:self.collectionView layout:self decorationViewMsgForSection:indexPath.section];
         for (FCDecorationViewMsgModel *msgM in decorationMsgs) {
             NSArray *decorationViewLayoutAttributes = self.decorationMsgs[@(indexPath.section)];
             for (UICollectionViewLayoutAttributes *layoutAttributes in decorationViewLayoutAttributes) {
-                if ([layoutAttributes isEqual:msgM] && [elementKind isEqualToString:msgM.reuseIdentifier]) {
+                if ([elementKind isEqualToString:msgM.reuseIdentifier]) {
                     return layoutAttributes;
                 }
             }
